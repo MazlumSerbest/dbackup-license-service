@@ -1,0 +1,13 @@
+{
+    "items": [
+        {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "issuer_id": "00000000-0000-0000-0000-000000000000",
+            "role_id": "company_admin",
+            "tenant_id": "",
+            "trustee_id": "user-id",
+            "trustee_type": "user",
+            "version": 0
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "items": [
+        {
+            "id": "00000000-0000-0000-0000-0000018dfc4e",
+            "version": 0,
+            "trustee_type": "user",
+            "issuer_id": "7d5ac2ce-90ba-400b-b577-0f080ad9b66b",
+            "tenant_id": "",
+            "trustee_id": "user-id",
+            "role_id": "accounts_ro_admin"
+        },
+        {
+            "id": "00000000-0000-0000-0000-0000018dfc4f",
+            "version": 0,
+            "trustee_type": "user",
+            "issuer_id": "7d5ac2ce-90ba-400b-b577-0f080ad9b66b",
+            "tenant_id": "",
+            "trustee_id": "user-id",
+            "role_id": "protection_ro_admin",
+            "resource_namespace": "backup"
+        }
+    ]
+}
