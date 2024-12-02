@@ -35,6 +35,27 @@ export async function setQuotaPerGb(tenantId, bytes) {
                                     version: 0,
                                 },
                             },
+                            {
+                                name: "pg_base_workstations",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            },
+                            {
+                                name: "pg_base_servers",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            },
+                            {
+                                name: "pg_base_vms",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            }
                         ],
                     };
                 } else {
@@ -54,6 +75,27 @@ export async function setQuotaPerGb(tenantId, bytes) {
                                     version: item.quota.version,
                                 },
                             },
+                            {
+                                name: "pg_base_workstations",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            },
+                            {
+                                name: "pg_base_servers",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            },
+                            {
+                                name: "pg_base_vms",
+                                application_id: item.application_id,
+                                edition: "pck_per_gigabyte",
+                                status: 1,
+                                locked: false,
+                            }
                         ],
                     };
                 }
