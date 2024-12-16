@@ -4,14 +4,13 @@ import { setQuotaPerGb } from './usage.js';
 
 console.log('Service started!');
 
-async function fetchDataAndSend() {
+async function fetchDataAndUpdateQuotas() {
     const licensedCustomers = await getLicensedCustomers();
     const activeLicenses = await getActiveLicenses();
     let updatedCustomers = [];
 
     licensedCustomers.filter((l) => !l.model).forEach((c) => {
-        setQuotaPerGb(c.acronisId, 0);
-        console.log(`Quota set to 0 bytes for ${c.name}`);
+        setQuotaPerGb(c.acronisId, c.name, 0);
     });
 
     licensedCustomers.filter((l) => l.model).forEach((c) => {
@@ -25,15 +24,14 @@ async function fetchDataAndSend() {
 
         updatedCustomers.push(c.acronisId);
 
-        setQuotaPerGb(c.acronisId, totalBytes);
-        console.log(`Quota set to ${totalBytes} bytes for ${c.name}`);
+        setQuotaPerGb(c.acronisId, c.name, totalBytes);
     });
 }
 
-await fetchDataAndSend();
+await fetchDataAndUpdateQuotas();
 
 //Her 5 dakikada bir veri çekip işleme
 schedule.scheduleJob('*/5 * * * *', async () => {
     console.log('Task running...');
-    await fetchDataAndSend();
+    await fetchDataAndUpdateQuotas();
 });

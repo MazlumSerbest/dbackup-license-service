@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getAuth, baseUrl } from './acronis/getToken.js';
 
-export async function setQuotaPerGb(tenantId, bytes) {
+export async function setQuotaPerGb(tenantId, tenantName, bytes) {
     try {
         const name = "pg_base_storage";
 
@@ -17,7 +17,11 @@ export async function setQuotaPerGb(tenantId, bytes) {
         for (const item of offeringItems.items) {
             if (item.name === name && item.infra_id === "d46a4b2a-2631-4f76-84cd-07ce3aed3dde") {
                 let data;
-                if (item.quota.value === bytes) return;
+                if (item.quota.value === bytes) {
+
+                    console.log(`Quota already correct for ${tenantName}`);
+                    return;
+                }
 
                 if (!item.quota) {
                     data = {
@@ -109,6 +113,7 @@ export async function setQuotaPerGb(tenantId, bytes) {
                     }
                 );
 
+                console.log(`Quota set to ${bytes} bytes for ${tenantName}`);
                 return updateResponse.data;
             }
         }
