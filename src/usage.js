@@ -17,6 +17,7 @@ export async function setQuotaPerGb(tenantId, bytes) {
         for (const item of offeringItems.items) {
             if (item.name === name && item.infra_id === "d46a4b2a-2631-4f76-84cd-07ce3aed3dde") {
                 let data;
+                if (item.quota.value === bytes) return;
 
                 if (!item.quota) {
                     data = {
