@@ -28,7 +28,7 @@ async function fetchToken() {
         );
 
         tokenInfo = response.data;
-        tokenExpiry = Date.now() + (5400 * 1000);
+        tokenExpiry = Date.now() + (1800 * 1000); // 30 minutes
 
         return tokenInfo;
     } catch (error) {

@@ -9,11 +9,11 @@ async function fetchDataAndUpdateQuotas() {
     const activeLicenses = await getActiveLicenses();
     let updatedCustomers = [];
 
-    licensedCustomers.filter((l) => !l.model).forEach((c) => {
-        setQuotaPerGb(c.acronisId, c.name, 0);
+    licensedCustomers.filter((l) => !l.model).forEach(async (c) => {
+        await setQuotaPerGb(c.acronisId, c.name, 0);
     });
 
-    licensedCustomers.filter((l) => l.model).forEach((c) => {
+    licensedCustomers.filter((l) => l.model).forEach(async (c) => {
         if (updatedCustomers.includes(c.acronisId)) return;
 
         const totalBytes = activeLicenses.reduce((acc, l) => {
@@ -24,14 +24,15 @@ async function fetchDataAndUpdateQuotas() {
 
         updatedCustomers.push(c.acronisId);
 
-        setQuotaPerGb(c.acronisId, c.name, totalBytes);
+        await setQuotaPerGb(c.acronisId, c.name, totalBytes);
     });
 }
 
 await fetchDataAndUpdateQuotas();
 
-//Her 5 dakikada bir veri çekip işleme
-schedule.scheduleJob('*/5 * * * *', async () => {
+//Her 15 dakikada bir veri çekip işleme
+schedule.scheduleJob('*/10 * * * *', async () => {
     console.log('Task running...');
+    console.log(new Date().toLocaleString());
     await fetchDataAndUpdateQuotas();
 });
