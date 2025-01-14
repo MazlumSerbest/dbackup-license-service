@@ -1,5 +1,5 @@
-import pkg from 'pg';
-import dotenv from 'dotenv';
+import pkg from "pg";
+import dotenv from "dotenv";
 
 dotenv.config();
 const { Pool } = pkg;
@@ -14,14 +14,26 @@ const pool = new Pool({
 
 export const query = (text, params) => pool.query(text, params);
 
-export async function getActiveLicenses() {
-    const activeLicenses = await query('SELECT * from "v_ActiveLicenses";')
+export async function getPerGBActiveLicenses() {
+    const licenses = await query(
+        `SELECT * from "v_ActiveLicenses" WHERE model = 'perGB';`,
+    );
 
-    return activeLicenses.rows;
+    return licenses.rows;
+}
+
+export async function getPerWorkloadActiveLicenses() {
+    const licenses = await query(
+        `SELECT * from "v_ActiveLicenses" WHERE model = 'perWorkload';`,
+    );
+
+    return licenses.rows;
 }
 
 export async function getLicensedCustomers() {
-    const licensedCustomers = await query('SELECT * from "v_LicensedCustomers";')
+    const licensedCustomers = await query(
+        'SELECT * from "v_LicensedCustomers";',
+    );
 
     return licensedCustomers.rows;
 }
