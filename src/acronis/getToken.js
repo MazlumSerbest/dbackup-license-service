@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-import axios from 'axios';
-import { Buffer } from 'buffer';
+import dotenv from "dotenv";
+import axios from "axios";
+import { Buffer } from "buffer";
 
 dotenv.config();
 
@@ -13,27 +13,32 @@ async function fetchToken() {
     const clientId = process.env.ACRONIS_CLIENT_ID;
     const clientSecret = process.env.ACRONIS_CLIENT_SECRET;
 
-    const encodedClientCreds = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    const encodedClientCreds = Buffer.from(
+        `${clientId}:${clientSecret}`,
+    ).toString("base64");
 
     const headers = {
-        'Authorization': `Basic ${encodedClientCreds}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: `Basic ${encodedClientCreds}`,
+        "Content-Type": "application/x-www-form-urlencoded",
     };
 
     try {
         const response = await axios.post(
             `${baseUrl}/idp/token`,
-            'grant_type=client_credentials',
-            { headers }
+            "grant_type=client_credentials",
+            { headers },
         );
 
         tokenInfo = response.data;
-        tokenExpiry = Date.now() + (1800 * 1000); // 30 minutes
+        tokenExpiry = Date.now() + 1800 * 1000; // 30 minutes
 
         return tokenInfo;
     } catch (error) {
-        console.error('Error fetching token:', error.response?.data || error.message);
-        throw new Error('Failed to fetch token');
+        console.error(
+            "Error fetching token:",
+            error.response?.data || error.message,
+        );
+        throw new Error("Failed to fetch token");
     }
 }
 
@@ -50,13 +55,13 @@ export async function getAuth() {
         const token = await getToken();
 
         const authHeaders = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token.access_token}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.access_token}`,
         };
 
         return authHeaders;
     } catch (error) {
-        console.error('Error getting auth headers:', error.message);
+        console.error("Error getting auth headers:", error.message);
         throw error;
     }
 }
