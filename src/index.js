@@ -93,8 +93,8 @@ async function fetchDataAndUpdateQuotas() {
         const customersWithoutQuota = licensedCustomers.filter((l) => !l.model);
 
         await Promise.all(
-            customersWithoutQuota.map(async (c) => {
-                await setQuotaToZero(c.acronisId, c.name);
+            customersWithoutQuota.map((c) => {
+                setQuotaToZero(c.acronisId, c.name);
             }),
             updatePerGBQuotas(),
             updatePerWorkloadQuotas(),
@@ -107,15 +107,22 @@ async function fetchDataAndUpdateQuotas() {
 await fetchDataAndUpdateQuotas();
 
 //Her 10 dakikada bir veri çekip işleme
+let isRunning = false;
+
 schedule.scheduleJob("*/10 * * * *", async () => {
+    if (isRunning) {
+        console.log("Previous task is still running. Skipping this execution.");
+        return;
+    }
+
+    isRunning = true;
     const now = new Date();
+    console.log("----------------------------------------");
     console.log(`Task started at ${now.toLocaleString()}...`);
 
     try {
-        await fetchDataAndUpdateQuotas().then(() => {
-            console.log(`Task completed at ${new Date().toLocaleString()}.`);
-            console.log("----------------------------------------");
-        });
+        await fetchDataAndUpdateQuotas();
+        isRunning = false;
     } catch (error) {
         console.error(`Task failed at ${new Date().toLocaleString()}:`, error);
     }
