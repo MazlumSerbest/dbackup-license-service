@@ -3,12 +3,18 @@ import { getAuth, baseUrl } from "./acronis/getToken.js";
 
 export async function setQuotaToZero(tenantId, tenantName) {
     try {
-        const offeringItemsResponse = await axios.get(
-            `${baseUrl}/tenants/${tenantId}/offering_items?status=1`,
-            {
+        const offeringItemsResponse = await axios
+            .get(`${baseUrl}/tenants/${tenantId}/offering_items?status=1`, {
                 headers: await getAuth(),
-            },
-        );
+            })
+            .catch((error) => {
+                if (error.status === 404) return { status: 404 };
+            });
+
+        if (offeringItemsResponse.status === 404) {
+            console.log(`${tenantName} named tenant not found`);
+            return;
+        }
 
         const offeringItems = offeringItemsResponse.data;
 
@@ -49,12 +55,21 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
     try {
         const name = "pg_base_storage";
 
-        const offeringItemsResponse = await axios.get(
-            `${baseUrl}/tenants/${tenantId}/offering_items?edition=pck_per_gigabyte`,
-            {
-                headers: await getAuth(),
-            },
-        );
+        const offeringItemsResponse = await axios
+            .get(
+                `${baseUrl}/tenants/${tenantId}/offering_items?edition=pck_per_gigabyte`,
+                {
+                    headers: await getAuth(),
+                },
+            )
+            .catch((error) => {
+                if (error.status === 404) return { status: 404 };
+            });
+
+        if (offeringItemsResponse.status === 404) {
+            console.log(`${tenantName} named tenant not found`);
+            return;
+        }
 
         const offeringItems = offeringItemsResponse.data;
 
@@ -180,14 +195,24 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
 
 export async function setQuotaPerWorkload(tenantId, tenantName, quotas) {
     try {
-        const offeringItemsResponse = await axios.get(
-            `${baseUrl}/tenants/${tenantId}/offering_items?edition=pck_per_workload`,
-            {
-                headers: await getAuth(),
-            },
-        );
+        const offeringItemsResponse = await axios
+            .get(
+                `${baseUrl}/tenants/${tenantId}/offering_items?edition=pck_per_workload`,
+                {
+                    headers: await getAuth(),
+                },
+            )
+            .catch((error) => {
+                if (error.status === 404) return { status: 404 };
+            });
+
+        if (offeringItemsResponse.status === 404) {
+            console.log(`${tenantName} named tenant not found`);
+            return;
+        }
 
         const offeringItems = offeringItemsResponse.data;
+        
         const data = {
             offering_items: [
                 {
