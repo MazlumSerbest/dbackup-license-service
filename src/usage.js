@@ -4,28 +4,38 @@ import { getAuth, baseUrl } from "./acronis/getToken.js";
 export async function setQuotaToZero(tenantId, tenantName) {
     try {
         const offeringItemsResponse = await axios
-            .get(`${baseUrl}/tenants/${tenantId}/offering_items?status=1`, {
-                headers: await getAuth(),
-            })
+            .get(
+                `${baseUrl}/tenants/${tenantId}/offering_items?edition=*&status=1`,
+                {
+                    headers: await getAuth(),
+                },
+            )
             .catch((error) => {
                 if (error.status === 404) return { status: 404 };
             });
 
-        if (offeringItemsResponse.status === 404) {
-            console.log(`${tenantName} named tenant not found`);
-            return;
-        }
+        if (offeringItemsResponse.status === 404)
+            return console.log(`${tenantName} named tenant not found`);
 
         const offeringItems = offeringItemsResponse.data;
+
+        if (
+            offeringItems.items
+                .filter((i) => i.quota)
+                .every((i) => i.quota?.value === 0 && i.quota.overage === 0)
+        )
+            return console.log(`Quotas already set to 0 for ${tenantName}`);
 
         for (const item of offeringItems.items) {
             if (item.usage_name === "local_storage") item.status = 0;
 
-            item.quota = {
-                value: 0,
-                overage: 0,
-                version: 0,
-            };
+            if (item.quota) {
+                item.quota = {
+                    value: 0,
+                    overage: 0,
+                    version: item.quota.version || 0,
+                };
+            }
         }
 
         const data = {
@@ -109,6 +119,11 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version: 0,
+                                },
                             },
                             {
                                 name: "pg_base_servers",
@@ -116,6 +131,11 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version: 0,
+                                },
                             },
                             {
                                 name: "pg_base_vms",
@@ -123,6 +143,11 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version: 0,
+                                },
                             },
                         ],
                     };
@@ -149,6 +174,16 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version:
+                                        offeringItems.items.find(
+                                            (i) =>
+                                                i.name ===
+                                                "pg_base_workstations",
+                                        )?.quota?.version || 0,
+                                },
                             },
                             {
                                 name: "pg_base_servers",
@@ -156,6 +191,14 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version:
+                                        offeringItems.items.find(
+                                            (i) => i.name === "pg_base_servers",
+                                        )?.quota?.version || 0,
+                                },
                             },
                             {
                                 name: "pg_base_vms",
@@ -163,6 +206,14 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
                                 edition: "pck_per_gigabyte",
                                 status: 1,
                                 locked: false,
+                                quota: {
+                                    value: null,
+                                    overage: null,
+                                    version:
+                                        offeringItems.items.find(
+                                            (i) => i.name === "pg_base_vms",
+                                        )?.quota?.version || 0,
+                                },
                             },
                         ],
                     };
@@ -212,7 +263,7 @@ export async function setQuotaPerWorkload(tenantId, tenantName, quotas) {
         }
 
         const offeringItems = offeringItemsResponse.data;
-        
+
         const data = {
             offering_items: [
                 {
