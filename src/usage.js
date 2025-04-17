@@ -29,7 +29,7 @@ export async function setQuotaToZero(tenantId, tenantName) {
         for (const item of offeringItems.items) {
             if (item.usage_name === "local_storage") item.status = 0;
 
-            if (item.quota) {
+            if (item?.quota) {
                 item.quota = {
                     value: 0,
                     overage: 0,
@@ -85,18 +85,18 @@ export async function setQuotaPerGb(tenantId, tenantName, bytes) {
 
         for (const item of offeringItems.items) {
             if (
-                item.name === name &&
-                item.infra_id === "d46a4b2a-2631-4f76-84cd-07ce3aed3dde"
+                item?.name === name &&
+                item?.infra_id === "d46a4b2a-2631-4f76-84cd-07ce3aed3dde"
             ) {
                 let data;
-                if (item.quota.value === bytes) {
+                if (item?.quota?.value === bytes) {
                     console.log(
                         `PerGB quota already ${bytes} for ${tenantName}`,
                     );
                     return;
                 }
 
-                if (!item.quota) {
+                if (!item?.quota) {
                     data = {
                         offering_items: [
                             {
