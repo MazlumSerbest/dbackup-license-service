@@ -93,8 +93,8 @@ async function fetchDataAndUpdateQuotas() {
         const customersWithoutQuota = licensedCustomers.filter((l) => !l.model);
 
         await Promise.all(
-            customersWithoutQuota.map((c) => {
-                setQuotaToZero(c.acronisId, c.name);
+            customersWithoutQuota.map(async (c) => {
+                await setQuotaToZero(c.acronisId, c.name);
             }),
             updatePerGBQuotas(),
             updatePerWorkloadQuotas(),
