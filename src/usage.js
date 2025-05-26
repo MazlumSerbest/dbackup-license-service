@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuth, baseUrl } from "./acronis/getToken.js";
+import { getAuth, baseUrl } from "./acronis/get-token.js";
 
 export async function setQuotaToZero(tenantId, tenantName) {
     try {
