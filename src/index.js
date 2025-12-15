@@ -8,11 +8,7 @@ import { setQuotaPerGb, setQuotaPerWorkload, setQuotaToZero } from "./usage.js";
 
 console.log("Service started!");
 
-const licensedCustomers = await getLicensedCustomers();
-const activeLicensesPerGB = await getPerGBActiveLicenses();
-const activeLicensesPerWorkload = await getPerWorkloadActiveLicenses();
-
-async function updatePerGBQuotas() {
+async function updatePerGBQuotas(licensedCustomers, activeLicensesPerGB) {
     let updatedCustomers = [];
     const perGbCustomers = licensedCustomers.filter((l) => l.model === "perGB");
     if (!perGbCustomers.length) return;
@@ -34,7 +30,7 @@ async function updatePerGBQuotas() {
     );
 }
 
-async function updatePerWorkloadQuotas() {
+async function updatePerWorkloadQuotas(licensedCustomers, activeLicensesPerWorkload) {
     let updatedCustomers = [];
     const perWorkloadCustomers = licensedCustomers.filter(
         (l) => l.model === "perWorkload",
@@ -90,15 +86,20 @@ async function updatePerWorkloadQuotas() {
 
 async function fetchDataAndUpdateQuotas() {
     try {
+        // Her seferinde fresh data çek
+        const licensedCustomers = await getLicensedCustomers();
+        const activeLicensesPerGB = await getPerGBActiveLicenses();
+        const activeLicensesPerWorkload = await getPerWorkloadActiveLicenses();
+        
         const customersWithoutQuota = licensedCustomers.filter((l) => !l.model);
 
-        await Promise.all(
-            customersWithoutQuota.map(async (c) => {
+        await Promise.all([
+            ...customersWithoutQuota.map(async (c) => {
                 await setQuotaToZero(c.acronisId, c.name);
             }),
-            updatePerGBQuotas(),
-            updatePerWorkloadQuotas(),
-        );
+            updatePerGBQuotas(licensedCustomers, activeLicensesPerGB),
+            updatePerWorkloadQuotas(licensedCustomers, activeLicensesPerWorkload),
+        ]);
     } catch (error) {
         console.error("Error updating quotas:", error);
     }
